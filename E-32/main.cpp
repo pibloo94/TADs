@@ -1,4 +1,4 @@
-﻿//PABLO AGUDO BRUN
+//PABLO AGUDO BRUN
 
 #include <iostream>
 #include <fstream>
@@ -30,13 +30,13 @@ bool ordenar(tSolucion a, tSolucion b) {
 }
 
 void imprimir(const std::vector<tSolucion>& v) {
-	for (auto &it: v){
+	for (auto &it : v) {
 		std::cout << it.nombreDeporte << " " << it.inscritos << "\n";
 	}
 }
 
 
-void resuelveCaso() {
+bool resuelveCaso() {
 	std::string palabra, deporte, alumno;
 	std::string nombreEst;
 
@@ -48,8 +48,12 @@ void resuelveCaso() {
 
 	std::cin >> palabra;
 
+	if (!std::cin) {
+		return false;
+	}
+
 	while (palabra != "_FIN_") {
-		if (palabra[0] > 'a' && palabra[0] < 'z') { //es un alumno
+		if (palabra[0] >= 'a' && palabra[0] <= 'z') { //es un alumno
 			alumno = palabra;
 			itA = alumnos.find(alumno);
 
@@ -58,10 +62,10 @@ void resuelveCaso() {
 				deportes[deporte]++; // aumentas la cantidad de alumnos
 			}
 			else { // si el alumno ya esta inscrito en un deporte
-				if (itA->second != deporte) { // si el deporte es distinto al del inscrito
+				if (itA->second != deporte && itA->second != "SIN DEPORTE") { // si el deporte es distinto al del inscrito
 					deportes[itA->second]--; // se desinscribe el alumno;
+					alumnos[alumno] = "SIN DEPORTE";
 				}
-	
 			}
 		}
 		else { // es un deporte
@@ -86,6 +90,8 @@ void resuelveCaso() {
 	imprimir(v);
 
 	std::cout << "***\n";
+
+	return true;
 }
 
 int main() {
@@ -95,7 +101,7 @@ int main() {
 	auto cinbuf = std::cin.rdbuf(in.rdbuf()); //save old buf and redirect std::cin to casos.txt
 #endif 
 
-	resuelveCaso();
+	while (resuelveCaso());
 
 	// Para restablecer entrada. Comentar para acepta el reto
 #ifndef DOMJUDGE // para dejar todo como estaba al principio
