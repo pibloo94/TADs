@@ -14,7 +14,7 @@ using namespace std;
 
 void imprimir(const std::map<std::string, std::vector<int>>& palabras) {
 
-	for (auto &it:palabras) {
+	for (auto &it : palabras) {
 		std::cout << it.first;
 
 		for (int i = 0; i < it.second.size(); i++) {
@@ -27,7 +27,7 @@ void imprimir(const std::map<std::string, std::vector<int>>& palabras) {
 
 void resolver(
 	std::map<std::string, std::vector<int>>& palabras,
-	int& j) {
+	const int& j) {
 
 	std::string clave, linea;
 
@@ -53,7 +53,7 @@ void resolver(
 				}
 			}
 		}
-	}	
+	}
 }
 
 bool resuelveCaso() {
@@ -64,7 +64,7 @@ bool resuelveCaso() {
 	cin.get();
 
 	if (n == 0) {
-		return true;
+		return false;
 	}
 
 	for (int j = 1; j <= n; j++) {
@@ -75,7 +75,7 @@ bool resuelveCaso() {
 
 	std::cout << "----\n";
 
-	return false;
+	return true;
 }
 
 int main() {
