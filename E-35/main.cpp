@@ -5,10 +5,9 @@
 #include <vector>
 #include <fstream>
 
-using namespace std;
-
 #include "carnet_puntos.h"
 
+using namespace std;
 
 
 bool resuelveCaso() {
@@ -52,7 +51,7 @@ bool resuelveCaso() {
 					cout << ' ' << dni;
 				cout << '\n';
 			}
-			else{
+			else {
 				cout << "OPERACION DESCONOCIDA\n";
 			}
 		}
