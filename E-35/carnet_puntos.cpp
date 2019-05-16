@@ -24,6 +24,7 @@ void carnet_puntos::nuevo(std::string DNI) {
 		mapConductores[DNI] = 15;
 		listaPuntos[15] ++;
 		mapConductoresPorPuntos[15].push_front(DNI);
+		mapIteradores[DNI] = mapConductoresPorPuntos[15].begin();
 	}
 }
 
@@ -36,16 +37,22 @@ void carnet_puntos::quitar(std::string DNI, int puntos) {
 		//Si a un conductor se le quitan mas puntos de los que tiene, se quedara con 0 puntos.
 		int aux = mapConductores[DNI] - puntos;
 
-		if (mapConductores[DNI] != 0) {
+		if (it->second != 0) {
 			if (aux < 0) {
 				listaPuntos[mapConductores[DNI]]--;
-				mapConductoresPorPuntos[0].erase(mapIteradores[DNI]);
+				mapConductoresPorPuntos[it->second].erase(mapIteradores[DNI]);
+				mapConductoresPorPuntos[0].push_front(DNI);
+				mapIteradores.erase(DNI);
+				mapIteradores[DNI] = mapConductoresPorPuntos[0].begin();
 				mapConductores[DNI] = 0;
 				listaPuntos[0] ++;
 			}
 			else {
 				listaPuntos[mapConductores[DNI]]--;
-				mapConductoresPorPuntos[puntos].erase(mapIteradores[DNI]);
+				mapConductoresPorPuntos[it->second].erase(mapIteradores[DNI]);
+				mapConductoresPorPuntos[puntos].push_front(DNI);
+				mapIteradores.erase(DNI);
+				mapIteradores[DNI] = mapConductoresPorPuntos[puntos].begin();
 				mapConductores[DNI] = aux;
 				listaPuntos[aux] ++;
 			}
@@ -59,16 +66,34 @@ void carnet_puntos::quitar(std::string DNI, int puntos) {
 
 //le anade puntos a un conductor enmendado.
 void carnet_puntos::recuperar(std::string DNI, int puntos) {
-	//Si debido a una recuperacion un conductor supera los 15 puntos, se quedara con 15 puntos.
+	auto it = mapConductores.find(DNI);
+	
+	if (it != mapConductores.end()) {
+		int aux = it->second + puntos;
 
+		//Si debido a una recuperacion un conductor supera los 15 puntos, se quedara con 15 puntos.
+		if(it->second != 15){
+			if (aux < 15) {
+				listaPuntos[it->second] --;
+				mapConductoresPorPuntos[it->second].erase(mapIteradores[DNI]);
+				mapIteradores.erase(DNI);
+				mapIteradores[DNI] = mapConductoresPorPuntos[puntos].begin();
+				mapConductores[DNI] = aux;
+				listaPuntos[aux] ++;
+			}
+		}
+	}
 	//En caso de que el conductor no exista, lanza una excepcion
+	else {
+		throw domain_error("Conductor inexistente");
+	}
 }
 
 //devuelve los puntos actuales de un conductor. 
 int carnet_puntos::consultar(std::string DNI) {
 	auto it = mapConductores.find(DNI);
 	int punt;
-	
+
 	//En caso de que el conductor no exista, lanza una excepcion
 	if (it == mapConductores.end()) {
 		throw domain_error("Conductor inexistente");
@@ -96,7 +121,7 @@ int carnet_puntos::cuantos_con_puntos(int puntos) {
 }
 
 //produce una lista con los DNI de los conductores que poseen un numero determinado de puntos.
-std::vector<std::string> carnet_puntos::listar_por_puntos(int puntos) {
+std::vector<std::string> carnet_puntos::lista_por_puntos(int puntos) {
 	//La lista estara ordenada por el momento en el que el conductor paso a tener esos puntos, primero el que menos tiempo lleva con esos puntos.
 	std::vector<std::string> lista;
 
@@ -105,7 +130,7 @@ std::vector<std::string> carnet_puntos::listar_por_puntos(int puntos) {
 		throw domain_error("Puntos no validos");
 	}
 	else {
-		for (auto& it:mapConductoresPorPuntos[puntos]) {
+		for (auto& it : mapConductoresPorPuntos[puntos]) {
 			lista.push_back(it);
 		}
 	}
