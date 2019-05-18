@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <fstream>
+
 #include "carnet_puntos.h"
 
 using namespace std;
@@ -16,6 +17,7 @@ carnet_puntos::carnet_puntos() {
 //anade un nuevo conductor identicado por su dni(un string), con 15 puntos.
 void carnet_puntos::nuevo(std::string DNI) {
 	auto it = mapConductores.find(DNI);
+
 	//En caso de que el DNI este duplicado, la operacion lanza una excepcion 
 	if (it != mapConductores.end()) {
 		throw domain_error("Conductor duplicado");
@@ -38,11 +40,11 @@ void carnet_puntos::quitar(std::string DNI, int puntos) {
 		int aux = mapConductores[DNI] - puntos;
 
 		if (it->second != 0) {
-			if (aux < 0) {
+			if (aux <= 0) {
 				listaPuntos[mapConductores[DNI]]--;
 				mapConductoresPorPuntos[it->second].erase(mapIteradores[DNI]);
-				mapConductoresPorPuntos[0].push_front(DNI);
 				mapIteradores.erase(DNI);
+				mapConductoresPorPuntos[0].push_front(DNI);
 				mapIteradores[DNI] = mapConductoresPorPuntos[0].begin();
 				mapConductores[DNI] = 0;
 				listaPuntos[0] ++;
@@ -50,9 +52,9 @@ void carnet_puntos::quitar(std::string DNI, int puntos) {
 			else {
 				listaPuntos[mapConductores[DNI]]--;
 				mapConductoresPorPuntos[it->second].erase(mapIteradores[DNI]);
-				mapConductoresPorPuntos[puntos].push_front(DNI);
 				mapIteradores.erase(DNI);
-				mapIteradores[DNI] = mapConductoresPorPuntos[puntos].begin();
+				mapConductoresPorPuntos[aux].push_front(DNI);
+				mapIteradores[DNI] = mapConductoresPorPuntos[aux].begin();
 				mapConductores[DNI] = aux;
 				listaPuntos[aux] ++;
 			}
@@ -67,19 +69,29 @@ void carnet_puntos::quitar(std::string DNI, int puntos) {
 //le anade puntos a un conductor enmendado.
 void carnet_puntos::recuperar(std::string DNI, int puntos) {
 	auto it = mapConductores.find(DNI);
-	
+
 	if (it != mapConductores.end()) {
 		int aux = it->second + puntos;
 
 		//Si debido a una recuperacion un conductor supera los 15 puntos, se quedara con 15 puntos.
-		if(it->second != 15){
+		if (it->second != 15) {
 			if (aux < 15) {
 				listaPuntos[it->second] --;
 				mapConductoresPorPuntos[it->second].erase(mapIteradores[DNI]);
 				mapIteradores.erase(DNI);
-				mapIteradores[DNI] = mapConductoresPorPuntos[puntos].begin();
+				mapConductoresPorPuntos[aux].push_front(DNI);
+				mapIteradores[DNI] = mapConductoresPorPuntos[aux].begin();
 				mapConductores[DNI] = aux;
 				listaPuntos[aux] ++;
+			}
+			else {
+				listaPuntos[it->second] --;
+				mapConductoresPorPuntos[it->second].erase(mapIteradores[DNI]);
+				mapIteradores.erase(DNI);
+				mapConductoresPorPuntos[15].push_front(DNI);
+				mapIteradores[DNI] = mapConductoresPorPuntos[15].begin();
+				mapConductores[DNI] = 15;
+				listaPuntos[15] ++;
 			}
 		}
 	}
@@ -134,5 +146,6 @@ std::vector<std::string> carnet_puntos::lista_por_puntos(int puntos) {
 			lista.push_back(it);
 		}
 	}
+
 	return lista;
 }

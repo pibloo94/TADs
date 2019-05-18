@@ -5,6 +5,7 @@
 #include <vector>
 #include <fstream>
 #include <queue>
+#include <list>
 #include <map>
 #include <unordered_map>
 
